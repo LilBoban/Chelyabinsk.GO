@@ -78,16 +78,21 @@ object EventsTab : Tab {
 
 @Composable
 fun EventsScreenContent() {
-    var selectedCategory by remember { mutableStateOf("Выставки") }
-    val categories = listOf("Новый год", "Экскурсии", "Выставки", "Театры", "Концерты")
+    val categories = listOf("Выставки", "Театры", "Экскурсии", "Новый год")
+    var selectedCategory by remember { mutableStateOf(categories[0]) }
 
+    val filteredEvents = remember(selectedCategory) {
+        mockEvents.filter { it.category == selectedCategory }
+    }
     Column(
         modifier = Modifier.fillMaxSize().background(Color.White)
     ) {
         HeaderWithPatternAndFilters(
             categories = categories,
             selectedCategory = selectedCategory,
-            onCategorySelected = { selectedCategory = it }
+            onCategorySelected = { newCategory ->
+                selectedCategory = newCategory
+            }
         )
 
         Spacer(modifier = Modifier.height(5.dp))
@@ -97,13 +102,21 @@ fun EventsScreenContent() {
                 .fillMaxSize()
                 .background(Color.White)
         ) {
-            items(mockEvents) { event ->
+            items(filteredEvents) { event ->
                 EventCard(event)
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 16.dp),
                     thickness = 1.dp,
                     color = Color.LightGray.copy(alpha = 0.5f)
                 )
+            }
+
+            if (filteredEvents.isEmpty()) {
+                item {
+                    Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+                        Text("В этой категории пока нет событий", color = Color.Gray)
+                    }
+                }
             }
 
             item { Spacer(modifier = Modifier.height(16.dp)) }
