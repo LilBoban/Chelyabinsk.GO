@@ -15,7 +15,7 @@ object ProfileTab : Tab {
         get() {
             val icon = rememberVectorPainter(Icons.Default.Person)
             return remember {
-                TabOptions(index = 2u, title = "Профиль", icon = icon)
+                TabOptions(index = 3u, title = "Профиль", icon = icon)
             }
         }
 

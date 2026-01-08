@@ -30,6 +30,7 @@ class MainTabsScreen : Screen {
                     ) {
                         TabNavigationItem(HomeTab)
                         TabNavigationItem(EventsTab)
+                        TabNavigationItem(PlacesTab)
                         TabNavigationItem(ProfileTab)
                     }
                 }
