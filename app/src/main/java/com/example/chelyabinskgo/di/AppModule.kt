@@ -6,7 +6,12 @@ import com.example.chelyabinskgo.data.repository.EventsRepository
 import com.example.chelyabinskgo.data.repository.EventsRepositoryImpl
 import com.example.chelyabinskgo.data.repository.PlacesRepository
 import com.example.chelyabinskgo.data.repository.PlacesRepositoryImpl
+import com.example.chelyabinskgo.domain.usecase.GetEventsUseCase
+import com.example.chelyabinskgo.domain.usecase.GetPlacesUseCase
+import com.example.chelyabinskgo.presentation.viewmodel.EventsViewModel
+import com.example.chelyabinskgo.presentation.viewmodel.PlacesViewModel
 import org.koin.dsl.module
+import org.koin.androidx.viewmodel.dsl.viewModel
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -32,4 +37,10 @@ val appModule = module {
 
     single<EventsRepository> { EventsRepositoryImpl(get()) }
     single<PlacesRepository> { PlacesRepositoryImpl(get()) }
+
+    single { GetEventsUseCase(get()) }
+    single { GetPlacesUseCase(get()) }
+
+    viewModel { EventsViewModel(get()) }
+    viewModel { PlacesViewModel(get()) }
 }

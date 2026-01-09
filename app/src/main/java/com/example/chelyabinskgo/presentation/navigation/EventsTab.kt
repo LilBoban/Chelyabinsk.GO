@@ -35,10 +35,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,12 +56,11 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.chelyabinskgo.R
-import com.example.chelyabinskgo.data.repository.EventsRepository
 import com.example.chelyabinskgo.domain.model.EventMock
+import com.example.chelyabinskgo.presentation.viewmodel.EventsViewModel
 import com.example.chelyabinskgo.ui.theme.ChelyabinskCream
 import com.example.chelyabinskgo.ui.theme.ChelyabinskGreen
-import android.util.Log
-import org.koin.compose.koinInject
+import org.koin.androidx.compose.koinViewModel
 
 object EventsTab : Tab {
     override val options: TabOptions
@@ -81,63 +80,35 @@ object EventsTab : Tab {
 
 @Composable
 fun EventsScreenContent() {
-    val repository: EventsRepository = koinInject()
-
-    var isLoading by remember { mutableStateOf(true) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
-    var events by remember { mutableStateOf<List<EventMock>>(emptyList()) }
-    var categories by remember { mutableStateOf<List<String>>(emptyList()) }
-    var selectedCategory by remember { mutableStateOf("") }
-
-    LaunchedEffect(Unit) {
-        isLoading = true
-        errorMessage = null
-        try {
-            val data = repository.getEvents()
-            events = data
-            categories = data.map { it.category }.distinct()
-            selectedCategory = categories.firstOrNull().orEmpty()
-        } catch (e: Exception) {
-            Log.e("EventsTab", "Failed to load events", e)
-            errorMessage = "Failed to load events"
-        } finally {
-            isLoading = false
-        }
-    }
-
-    val filteredEvents = remember(events, selectedCategory) {
-        if (selectedCategory.isBlank()) {
-            events
-        } else {
-            events.filter { it.category == selectedCategory }
-        }
-    }
+    val viewModel: EventsViewModel = koinViewModel()
+    val uiState by viewModel.uiState.collectAsState()
+    val filteredEvents = uiState.filteredEvents
 
     Column(
         modifier = Modifier.fillMaxSize().background(Color.White)
     ) {
-        if (errorMessage != null) {
+        if (uiState.errorMessage != null) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = errorMessage.orEmpty(), color = Color.Red)
+                Text(text = uiState.errorMessage.orEmpty(), color = Color.Red)
             }
         }
 
         HeaderWithPatternAndFilters(
-            categories = categories,
-            selectedCategory = selectedCategory,
+            categories = uiState.categories,
+            selectedCategory = uiState.selectedCategory,
             onCategorySelected = { newCategory ->
-                selectedCategory = newCategory
+                viewModel.selectCategory(newCategory)
             }
         )
 
         Spacer(modifier = Modifier.height(5.dp))
 
-        if (isLoading) {
+        if (uiState.isLoading) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()

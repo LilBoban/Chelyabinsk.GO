@@ -14,7 +14,7 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Place // Иконка для таба
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,13 +31,12 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.chelyabinskgo.R
-import com.example.chelyabinskgo.data.repository.PlacesRepository
 import com.example.chelyabinskgo.domain.model.PlaceMock
+import com.example.chelyabinskgo.presentation.viewmodel.PlacesViewModel
 import com.example.chelyabinskgo.ui.theme.ChelyabinskCardGreen
 import com.example.chelyabinskgo.ui.theme.ChelyabinskCream
 import com.example.chelyabinskgo.ui.theme.ChelyabinskGreen
-import android.util.Log
-import org.koin.compose.koinInject
+import org.koin.androidx.compose.koinViewModel
 
 object PlacesTab : Tab {
     override val options: TabOptions
@@ -57,37 +56,9 @@ object PlacesTab : Tab {
 
 @Composable
 fun PlacesScreenContent() {
-    val repository: PlacesRepository = koinInject()
-
-    var isLoading by remember { mutableStateOf(true) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
-    var places by remember { mutableStateOf<List<PlaceMock>>(emptyList()) }
-    var categories by remember { mutableStateOf<List<String>>(emptyList()) }
-    var selectedCategory by remember { mutableStateOf("") }
-
-    LaunchedEffect(Unit) {
-        isLoading = true
-        errorMessage = null
-        try {
-            val data = repository.getPlaces()
-            places = data
-            categories = data.map { it.category }.distinct()
-            selectedCategory = categories.firstOrNull().orEmpty()
-        } catch (e: Exception) {
-            Log.e("PlacesTab", "Failed to load places", e)
-            errorMessage = "Failed to load places"
-        } finally {
-            isLoading = false
-        }
-    }
-
-    val filteredPlaces = remember(places, selectedCategory) {
-        if (selectedCategory.isBlank()) {
-            places
-        } else {
-            places.filter { it.category == selectedCategory }
-        }
-    }
+    val viewModel: PlacesViewModel = koinViewModel()
+    val uiState by viewModel.uiState.collectAsState()
+    val filteredPlaces = uiState.filteredPlaces
 
     LazyColumn(
         modifier = Modifier
@@ -95,25 +66,25 @@ fun PlacesScreenContent() {
             .background(Color.White)
     ) {
         item {
-            if (errorMessage != null) {
+            if (uiState.errorMessage != null) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = errorMessage.orEmpty(), color = Color.Red)
+                    Text(text = uiState.errorMessage.orEmpty(), color = Color.Red)
                 }
             }
 
             PlacesHeader(
-                categories = categories,
-                selectedCategory = selectedCategory,
-                onCategorySelected = { selectedCategory = it }
+                categories = uiState.categories,
+                selectedCategory = uiState.selectedCategory,
+                onCategorySelected = { viewModel.selectCategory(it) }
             )
         }
 
-        if (isLoading) {
+        if (uiState.isLoading) {
             item {
                 Box(
                     modifier = Modifier
