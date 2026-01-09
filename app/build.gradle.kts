@@ -74,6 +74,7 @@ dependencies {
     // Сеть
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
+    implementation(libs.okhttp.logging)
 
     // БД
     implementation(libs.androidx.room.runtime)

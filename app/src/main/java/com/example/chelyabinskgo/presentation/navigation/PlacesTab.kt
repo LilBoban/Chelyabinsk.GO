@@ -14,6 +14,7 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Place // Иконка для таба
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,11 +31,13 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.chelyabinskgo.R
+import com.example.chelyabinskgo.data.repository.PlacesRepository
 import com.example.chelyabinskgo.domain.model.PlaceMock
-import com.example.chelyabinskgo.domain.model.mockPlaces
 import com.example.chelyabinskgo.ui.theme.ChelyabinskCardGreen
 import com.example.chelyabinskgo.ui.theme.ChelyabinskCream
 import com.example.chelyabinskgo.ui.theme.ChelyabinskGreen
+import android.util.Log
+import org.koin.compose.koinInject
 
 object PlacesTab : Tab {
     override val options: TabOptions
@@ -54,11 +57,36 @@ object PlacesTab : Tab {
 
 @Composable
 fun PlacesScreenContent() {
-    val categories = listOf("Куда пойти", "Где поесть", "Где разместиться")
-    var selectedCategory by remember { mutableStateOf(categories[0]) }
+    val repository: PlacesRepository = koinInject()
 
-    val filteredPlaces = remember(selectedCategory) {
-        mockPlaces.filter { it.category == selectedCategory }
+    var isLoading by remember { mutableStateOf(true) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var places by remember { mutableStateOf<List<PlaceMock>>(emptyList()) }
+    var categories by remember { mutableStateOf<List<String>>(emptyList()) }
+    var selectedCategory by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        isLoading = true
+        errorMessage = null
+        try {
+            val data = repository.getPlaces()
+            places = data
+            categories = data.map { it.category }.distinct()
+            selectedCategory = categories.firstOrNull().orEmpty()
+        } catch (e: Exception) {
+            Log.e("PlacesTab", "Failed to load places", e)
+            errorMessage = "Failed to load places"
+        } finally {
+            isLoading = false
+        }
+    }
+
+    val filteredPlaces = remember(places, selectedCategory) {
+        if (selectedCategory.isBlank()) {
+            places
+        } else {
+            places.filter { it.category == selectedCategory }
+        }
     }
 
     LazyColumn(
@@ -67,6 +95,17 @@ fun PlacesScreenContent() {
             .background(Color.White)
     ) {
         item {
+            if (errorMessage != null) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = errorMessage.orEmpty(), color = Color.Red)
+                }
+            }
+
             PlacesHeader(
                 categories = categories,
                 selectedCategory = selectedCategory,
@@ -74,9 +113,35 @@ fun PlacesScreenContent() {
             )
         }
 
-        items(filteredPlaces) { place ->
-            PlaceCard(place)
-            Spacer(modifier = Modifier.height(16.dp))
+        if (isLoading) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Loading...", color = Color.Gray)
+                }
+            }
+        } else {
+            items(filteredPlaces) { place ->
+                PlaceCard(place)
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            if (filteredPlaces.isEmpty()) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("No places found", color = Color.Gray)
+                    }
+                }
+            }
         }
 
         item { Spacer(modifier = Modifier.height(16.dp)) }

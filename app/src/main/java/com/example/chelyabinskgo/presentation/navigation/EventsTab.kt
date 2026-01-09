@@ -35,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,10 +56,12 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.chelyabinskgo.R
+import com.example.chelyabinskgo.data.repository.EventsRepository
 import com.example.chelyabinskgo.domain.model.EventMock
-import com.example.chelyabinskgo.domain.model.mockEvents
 import com.example.chelyabinskgo.ui.theme.ChelyabinskCream
 import com.example.chelyabinskgo.ui.theme.ChelyabinskGreen
+import android.util.Log
+import org.koin.compose.koinInject
 
 object EventsTab : Tab {
     override val options: TabOptions
@@ -78,15 +81,52 @@ object EventsTab : Tab {
 
 @Composable
 fun EventsScreenContent() {
-    val categories = listOf("Выставки", "Театры", "Экскурсии", "Новый год")
-    var selectedCategory by remember { mutableStateOf(categories[0]) }
+    val repository: EventsRepository = koinInject()
 
-    val filteredEvents = remember(selectedCategory) {
-        mockEvents.filter { it.category == selectedCategory }
+    var isLoading by remember { mutableStateOf(true) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var events by remember { mutableStateOf<List<EventMock>>(emptyList()) }
+    var categories by remember { mutableStateOf<List<String>>(emptyList()) }
+    var selectedCategory by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        isLoading = true
+        errorMessage = null
+        try {
+            val data = repository.getEvents()
+            events = data
+            categories = data.map { it.category }.distinct()
+            selectedCategory = categories.firstOrNull().orEmpty()
+        } catch (e: Exception) {
+            Log.e("EventsTab", "Failed to load events", e)
+            errorMessage = "Failed to load events"
+        } finally {
+            isLoading = false
+        }
     }
+
+    val filteredEvents = remember(events, selectedCategory) {
+        if (selectedCategory.isBlank()) {
+            events
+        } else {
+            events.filter { it.category == selectedCategory }
+        }
+    }
+
     Column(
         modifier = Modifier.fillMaxSize().background(Color.White)
     ) {
+        if (errorMessage != null) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = errorMessage.orEmpty(), color = Color.Red)
+            }
+        }
+
         HeaderWithPatternAndFilters(
             categories = categories,
             selectedCategory = selectedCategory,
@@ -97,33 +137,42 @@ fun EventsScreenContent() {
 
         Spacer(modifier = Modifier.height(5.dp))
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White)
-        ) {
-            items(filteredEvents) { event ->
-                EventCard(event)
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    thickness = 1.dp,
-                    color = Color.LightGray.copy(alpha = 0.5f)
-                )
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(32.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Loading...", color = Color.Gray)
             }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+            ) {
+                items(filteredEvents) { event ->
+                    EventCard(event)
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        thickness = 1.dp,
+                        color = Color.LightGray.copy(alpha = 0.5f)
+                    )
+                }
 
-            if (filteredEvents.isEmpty()) {
-                item {
-                    Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
-                        Text("В этой категории пока нет событий", color = Color.Gray)
+                if (filteredEvents.isEmpty()) {
+                    item {
+                        Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+                            Text("No events found", color = Color.Gray)
+                        }
                     }
                 }
-            }
 
-            item { Spacer(modifier = Modifier.height(16.dp)) }
+                item { Spacer(modifier = Modifier.height(16.dp)) }
+            }
         }
     }
-
-
 }
 
 @Composable
