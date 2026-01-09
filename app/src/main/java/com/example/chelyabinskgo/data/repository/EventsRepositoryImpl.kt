@@ -1,27 +1,38 @@
 package com.example.chelyabinskgo.data.repository
 
+import android.util.Log
 import com.example.chelyabinskgo.data.remote.ApiService
 import com.example.chelyabinskgo.domain.model.EventMock
+import com.example.chelyabinskgo.domain.model.mockEvents
 
 class EventsRepositoryImpl(
     private val apiService: ApiService
 ) : EventsRepository {
     override suspend fun getEvents(): List<EventMock> {
-        val response = apiService.getEvents()
-        if (!response.success) {
-            throw IllegalStateException("Events request failed")
-        }
-        return response.data.map { dto ->
-            EventMock(
-                id = dto.id,
-                title = dto.title,
-                date = dto.date,
-                price = "",
-                location = dto.type,
-                category = dto.type,
-                imageUrl = "",
-                isFavorite = false
-            )
+        return try {
+            val response = apiService.getEvents()
+
+            if (response.success) {
+                response.data.map { dto ->
+                    EventMock(
+                        id = dto.id,
+                        title = dto.title,
+                        date = dto.date,
+                        price = "от 0 руб.",
+                        location = "Челябинск",
+                        category = dto.type,
+                        imageUrl = "",
+                        isFavorite = false
+                    )
+                }
+            } else {
+                Log.e("EventsRepository", "Сервер не дал данных грузятся моки")
+                mockEvents
+            }
+        } catch (e: Exception) {
+            Log.e("EventsRepository", "Инет сломался ${e.message}, грузятся моки")
+            mockEvents
         }
     }
 }
+
