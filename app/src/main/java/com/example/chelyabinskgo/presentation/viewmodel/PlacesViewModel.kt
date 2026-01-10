@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chelyabinskgo.domain.model.PlaceMock
 import com.example.chelyabinskgo.domain.usecase.GetPlacesUseCase
+import com.example.chelyabinskgo.domain.usecase.TogglePlaceFavoriteUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,7 +27,8 @@ data class PlacesUiState(
 }
 
 class PlacesViewModel(
-    private val getPlacesUseCase: GetPlacesUseCase
+    private val getPlacesUseCase: GetPlacesUseCase,
+    private val togglePlaceFavoriteUseCase: TogglePlaceFavoriteUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(PlacesUiState(isLoading = true))
     val uiState: StateFlow<PlacesUiState> = _uiState.asStateFlow()
@@ -57,5 +59,16 @@ class PlacesViewModel(
 
     fun selectCategory(category: String) {
         _uiState.update { it.copy(selectedCategory = category) }
+    }
+
+    fun onFavoriteClick(place: PlaceMock) {
+        viewModelScope.launch {
+            togglePlaceFavoriteUseCase(place)
+
+            val updatedPlaces = _uiState.value.places.map {
+                if (it.id == place.id) it.copy(isFavorite = !it.isFavorite) else it
+            }
+            _uiState.update { it.copy(places = updatedPlaces) }
+        }
     }
 }
