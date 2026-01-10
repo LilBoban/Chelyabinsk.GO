@@ -12,7 +12,7 @@ class EventsRepositoryImpl(
     private val favoritesDao: FavoritesDao
 ) : EventsRepository {
     override suspend fun getEvents(): List<EventMock> {
-        val favoriteIds = favoritesDao.getFavoriteIds()
+        val favoriteIds = favoritesDao.getFavoriteEventIds()
 
         val eventsFromApi = try {
             val response = apiService.getEvents()
@@ -22,6 +22,7 @@ class EventsRepositoryImpl(
                     EventMock(
                         id = dto.id,
                         title = dto.title,
+                        description = dto.description,
                         date = dto.date,
                         price = "от 0 руб.",
                         location = "Челябинск",
@@ -48,9 +49,9 @@ class EventsRepositoryImpl(
 
     override suspend fun toggleFavorite(event: EventMock) {
         if (event.isFavorite) {
-            favoritesDao.removeFromFavorites(event.id)
+            favoritesDao.removeEventFromFavorites(event.id)
         } else {
-            favoritesDao.addToFavorites(FavoriteEventEntity(event.id))
+            favoritesDao.addEventToFavorites(FavoriteEventEntity(event.id))
         }
     }
 }

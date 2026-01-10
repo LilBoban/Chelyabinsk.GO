@@ -93,7 +93,7 @@ data class EventDetailsScreen(val event: EventMock) : Screen {
                         .padding(24.dp)
                 ) {
                     Text(
-                        text = "${event.title}",
+                        text = "${event.category} ${event.title}",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
@@ -122,8 +122,7 @@ data class EventDetailsScreen(val event: EventMock) : Screen {
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "В Государственном историческом музее Южного Урала открыт новый проект Музеев Московского Кремля — выставка «Царь и Патриарх». Экспозиция рассказывает о взаимоотношениях церковной и светской власти в один из самых интересных периодов российской истории.\n\n" +
-                                "Челябинцы могут увидеть подлинные реликвии XVI-XVII веков, принадлежавшие русским царям и патриархам.", // Длинный текст для теста скролла
+                        text = "${event.description}",
                         fontSize = 14.sp,
                         lineHeight = 20.sp,
                         color = Color.Black.copy(alpha = 0.8f)
