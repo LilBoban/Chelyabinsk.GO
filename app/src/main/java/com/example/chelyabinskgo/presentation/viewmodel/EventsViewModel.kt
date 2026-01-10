@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chelyabinskgo.domain.model.EventMock
 import com.example.chelyabinskgo.domain.usecase.GetEventsUseCase
+import com.example.chelyabinskgo.domain.usecase.ToggleEventFavoriteUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,7 +27,8 @@ data class EventsUiState(
 }
 
 class EventsViewModel(
-    private val getEventsUseCase: GetEventsUseCase
+    private val getEventsUseCase: GetEventsUseCase,
+    private val toggleEventFavoriteUseCase: ToggleEventFavoriteUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(EventsUiState(isLoading = true))
     val uiState: StateFlow<EventsUiState> = _uiState.asStateFlow()
@@ -57,5 +59,19 @@ class EventsViewModel(
 
     fun selectCategory(category: String) {
         _uiState.update { it.copy(selectedCategory = category) }
+    }
+
+    fun onFavoriteClick(event: EventMock) {
+        viewModelScope.launch {
+            toggleEventFavoriteUseCase(event)
+
+            val updatedEvents = _uiState.value.events.map {
+                if (it.id == event.id) it.copy(isFavorite = !it.isFavorite) else it
+            }
+
+            _uiState.update {
+                it.copy(events = updatedEvents)
+            }
+        }
     }
 }

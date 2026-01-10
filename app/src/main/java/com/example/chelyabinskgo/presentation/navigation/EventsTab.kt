@@ -132,7 +132,9 @@ fun EventsScreenContent() {
                     Box(modifier = Modifier.clickable {
                         navigator.parent?.push(EventDetailsScreen(event))
                     }) {
-                        EventCard(event)
+                        EventCard(event = event,
+                            onFavoriteClick = { viewModel.onFavoriteClick(event) }
+                        )
                     }
                     HorizontalDivider(
                         modifier = Modifier.padding(horizontal = 16.dp),
@@ -281,7 +283,10 @@ fun HeaderWithPatternAndFilters(
 }
 
 @Composable
-fun EventCard(event: EventMock) {
+fun EventCard(
+    event: EventMock,
+    onFavoriteClick: () -> Unit
+) {
     var isFav by remember { mutableStateOf(event.isFavorite) }
 
     Row(
@@ -327,12 +332,12 @@ fun EventCard(event: EventMock) {
                 )
 
                 Icon(
-                    imageVector = if (isFav) Icons.Default.Star else Icons.Outlined.Star,
-                    contentDescription = "Избранное",
-                    tint = if (isFav) Color(0xFFFFD700) else Color.Gray,
+                    imageVector = if (event.isFavorite) Icons.Default.Star else Icons.Outlined.Star,
+                    contentDescription = null,
+                    tint = if (event.isFavorite) Color(0xFFFFD700) else Color.Gray,
                     modifier = Modifier
                         .size(24.dp)
-                        .clickable { isFav = !isFav }
+                        .clickable { onFavoriteClick() }
                 )
             }
 
