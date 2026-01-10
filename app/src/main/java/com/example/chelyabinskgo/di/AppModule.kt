@@ -12,7 +12,9 @@ import com.example.chelyabinskgo.domain.usecase.GetEventsUseCase
 import com.example.chelyabinskgo.domain.usecase.GetPlacesUseCase
 import com.example.chelyabinskgo.domain.usecase.ToggleEventFavoriteUseCase
 import com.example.chelyabinskgo.domain.usecase.TogglePlaceFavoriteUseCase
+import com.example.chelyabinskgo.presentation.viewmodel.EventDetailsViewModel
 import com.example.chelyabinskgo.presentation.viewmodel.EventsViewModel
+import com.example.chelyabinskgo.presentation.viewmodel.PlaceDetailsViewModel
 import com.example.chelyabinskgo.presentation.viewmodel.PlacesViewModel
 import org.koin.dsl.module
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -20,6 +22,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 val appModule = module {
     single {
@@ -28,6 +31,9 @@ val appModule = module {
         }
         OkHttpClient.Builder()
             .addInterceptor(logging)
+            .connectTimeout(1, TimeUnit.SECONDS)
+            .readTimeout(1, TimeUnit.SECONDS)
+            .writeTimeout(1, TimeUnit.SECONDS)
             .build()
     }
     single {
@@ -58,4 +64,6 @@ val appModule = module {
 
     viewModel { EventsViewModel(get(), get()) }
     viewModel { PlacesViewModel(get(), get()) }
+    viewModel { EventDetailsViewModel(get(),get()) }
+    viewModel { PlaceDetailsViewModel(get(),get()) }
 }

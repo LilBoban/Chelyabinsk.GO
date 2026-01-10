@@ -45,4 +45,8 @@ class PlacesRepositoryImpl(
             favoritesDao.addPlaceToFavorites(FavoritePlaceEntity(place.id))
         }
     }
+
+    override suspend fun isFavorite(placeId: Int): Boolean {
+        return favoritesDao.getFavoritePlaceIds().contains(placeId)
+    }
 }

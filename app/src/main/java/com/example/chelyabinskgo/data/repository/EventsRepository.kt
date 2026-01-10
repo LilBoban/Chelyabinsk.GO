@@ -5,4 +5,5 @@ import com.example.chelyabinskgo.domain.model.EventMock
 interface EventsRepository {
     suspend fun getEvents(): List<EventMock>
     suspend fun toggleFavorite(event: EventMock)
+    suspend fun isFavorite(eventId: Int): Boolean
 }

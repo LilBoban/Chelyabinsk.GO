@@ -28,10 +28,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.chelyabinskgo.R
 import com.example.chelyabinskgo.domain.model.PlaceMock
+import com.example.chelyabinskgo.presentation.screens.places.PlaceDetailsScreen
 import com.example.chelyabinskgo.presentation.viewmodel.PlacesViewModel
 import com.example.chelyabinskgo.ui.theme.ChelyabinskCardGreen
 import com.example.chelyabinskgo.ui.theme.ChelyabinskCream
@@ -59,6 +62,7 @@ fun PlacesScreenContent() {
     val viewModel: PlacesViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val filteredPlaces = uiState.filteredPlaces
+    val navigator = LocalNavigator.currentOrThrow
 
     LazyColumn(
         modifier = Modifier
@@ -97,7 +101,11 @@ fun PlacesScreenContent() {
             }
         } else {
             items(filteredPlaces) { place ->
-                PlaceCard(place)
+                Box(modifier = Modifier.clickable {
+                    navigator.parent?.push(PlaceDetailsScreen(place))
+                }) {
+                    PlaceCard(place)
+                }
                 Spacer(modifier = Modifier.height(16.dp))
             }
 

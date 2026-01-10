@@ -54,5 +54,9 @@ class EventsRepositoryImpl(
             favoritesDao.addEventToFavorites(FavoriteEventEntity(event.id))
         }
     }
+    override suspend fun isFavorite(eventId: Int): Boolean {
+        return favoritesDao.getFavoriteEventIds().contains(eventId)
+    }
+
 }
 

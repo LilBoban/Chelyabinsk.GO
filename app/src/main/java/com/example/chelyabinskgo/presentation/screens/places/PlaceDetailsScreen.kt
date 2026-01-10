@@ -1,88 +1,74 @@
-package com.example.chelyabinskgo.presentation.screens.events
+package com.example.chelyabinskgo.presentation.screens.places
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.Place
-import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.example.chelyabinskgo.R
-import com.example.chelyabinskgo.domain.model.EventMock
-import com.example.chelyabinskgo.presentation.navigation.EventsScreenContent
-import com.example.chelyabinskgo.presentation.viewmodel.EventDetailsViewModel
+import com.example.chelyabinskgo.domain.model.PlaceMock
+import com.example.chelyabinskgo.presentation.viewmodel.PlaceDetailsViewModel
+import com.example.chelyabinskgo.ui.theme.ChelyabinskCardGreen
 import com.example.chelyabinskgo.ui.theme.ChelyabinskGreen
 import org.koin.androidx.compose.koinViewModel
 
-data class EventDetailsScreen(val event: EventMock) : Screen {
+data class PlaceDetailsScreen(val place: PlaceMock) : Screen {
 
     @Composable
     override fun Content() {
-        val viewModel: EventDetailsViewModel = koinViewModel()
-
-        LaunchedEffect(Unit) { viewModel.init(event) }
-
         val navigator = LocalNavigator.currentOrThrow
         val context = LocalContext.current
         val scrollState = rememberScrollState()
 
+        val viewModel: PlaceDetailsViewModel = koinViewModel()
+
+        LaunchedEffect(Unit) {
+            viewModel.init(place)
+        }
         val isFavorite by viewModel.isFavorite.collectAsState()
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.splash_background_pattern), // пока нету картинки
+                painter = painterResource(id = R.drawable.splash_background_pattern),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(300.dp)
-                    .background(Color.DarkGray)
+                    .background(Color.Gray)
             )
 
             Column(
@@ -100,7 +86,7 @@ data class EventDetailsScreen(val event: EventMock) : Screen {
                         .padding(24.dp)
                 ) {
                     Text(
-                        text = "${event.category} ${event.title}",
+                        text = place.title,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
@@ -108,15 +94,26 @@ data class EventDetailsScreen(val event: EventMock) : Screen {
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    InfoRow(icon = Icons.Outlined.Place, text = event.location)
+                    PlaceInfoText(text = "8 (999) 999 99 99")
+                    PlaceInfoText(text = place.address)
+                    PlaceInfoText(text = "Ежедневно с 12:00 до 23:00")
+                    PlaceInfoText(text = "Кухня грузинская")
+                    PlaceInfoText(text = "Средний чек 2500 рублей")
 
-                    InfoRow(icon = Icons.Outlined.ShoppingCart, text = event.price)
+                    Spacer(modifier = Modifier.height(24.dp))
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        SocialIcon(text = "VK")
-                        SocialIcon(icon = Icons.Default.Share)
+                    Button(
+                        onClick = { Toast.makeText(context, "Бронь...", Toast.LENGTH_SHORT).show() },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = ChelyabinskCardGreen,
+                            contentColor = Color.Black
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(text = "Забронировать столик", fontSize = 16.sp)
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -129,7 +126,7 @@ data class EventDetailsScreen(val event: EventMock) : Screen {
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "${event.description}",
+                        text = place.description.ifEmpty { "Описание отсутствует..." },
                         fontSize = 14.sp,
                         lineHeight = 20.sp,
                         color = Color.Black.copy(alpha = 0.8f)
@@ -158,9 +155,7 @@ data class EventDetailsScreen(val event: EventMock) : Screen {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clickable {
-                            Toast.makeText(context, "TODO: Поделиться", Toast.LENGTH_SHORT).show()
-                        }
+                        modifier = Modifier.clickable { }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Share,
@@ -181,7 +176,7 @@ data class EventDetailsScreen(val event: EventMock) : Screen {
                         modifier = Modifier
                             .size(32.dp)
                             .clickable {
-                                viewModel.toggleFavorite(event)
+                                viewModel.toggleFavorite(place)
                             }
                     )
                 }
@@ -191,45 +186,11 @@ data class EventDetailsScreen(val event: EventMock) : Screen {
 }
 
 @Composable
-fun InfoRow(icon: ImageVector, text: String) {
-    Row(
-        modifier = Modifier.padding(vertical = 4.dp),
-        verticalAlignment = Alignment.Top
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = ChelyabinskGreen,
-            modifier = Modifier.size(20.dp)
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        Text(
-            text = text,
-            fontSize = 14.sp,
-            color = Color.Black
-        )
-    }
-}
-
-@Composable
-fun SocialIcon(icon: ImageVector? = null, text: String? = null) {
-    Box(
-        modifier = Modifier
-            .size(40.dp)
-            .clip(CircleShape)
-            .background(ChelyabinskGreen),
-        contentAlignment = Alignment.Center
-    ) {
-        if (icon != null) {
-            Icon(imageVector = icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
-        } else if (text != null) {
-            Text(text = text, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 12.sp)
-        }
-    }
-}
-
-@Preview
-@Composable
-fun EventDetailsScreenPreview(){
-    EventsScreenContent()
+fun PlaceInfoText(text: String) {
+    Text(
+        text = text,
+        fontSize = 14.sp,
+        color = Color.Black,
+        modifier = Modifier.padding(bottom = 4.dp)
+    )
 }
