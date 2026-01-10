@@ -146,7 +146,7 @@ fun SearchBar() {
 @Composable
 fun CategoriesGrid() {
     Column(
-        modifier = Modifier.padding(horizontal = 16.dp),
+        modifier = Modifier.padding(horizontal = 24.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         Row(
@@ -162,7 +162,7 @@ fun CategoriesGrid() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp),
-            horizontalArrangement = Arrangement.spacedBy(48.dp)
+            horizontalArrangement = Arrangement.SpaceAround
         ) {
             CategoryItem(icon = Icons.Outlined.Place, title = "Куда\nпойти") // Заменить на человечка
             CategoryItem(icon = Icons.Outlined.Call, title = "Сервисы") // Заменить на телефон

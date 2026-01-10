@@ -53,10 +53,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.chelyabinskgo.R
 import com.example.chelyabinskgo.domain.model.EventMock
+import com.example.chelyabinskgo.presentation.screens.events.EventDetailsScreen
 import com.example.chelyabinskgo.presentation.viewmodel.EventsViewModel
 import com.example.chelyabinskgo.ui.theme.ChelyabinskCream
 import com.example.chelyabinskgo.ui.theme.ChelyabinskGreen
@@ -83,6 +86,7 @@ fun EventsScreenContent() {
     val viewModel: EventsViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val filteredEvents = uiState.filteredEvents
+    val navigator = LocalNavigator.currentOrThrow
 
     Column(
         modifier = Modifier.fillMaxSize().background(Color.White)
@@ -124,7 +128,12 @@ fun EventsScreenContent() {
                     .background(Color.White)
             ) {
                 items(filteredEvents) { event ->
-                    EventCard(event)
+
+                    Box(modifier = Modifier.clickable {
+                        navigator.parent?.push(EventDetailsScreen(event))
+                    }) {
+                        EventCard(event)
+                    }
                     HorizontalDivider(
                         modifier = Modifier.padding(horizontal = 16.dp),
                         thickness = 1.dp,
