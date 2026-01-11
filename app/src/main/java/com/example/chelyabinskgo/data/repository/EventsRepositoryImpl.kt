@@ -3,6 +3,7 @@ package com.example.chelyabinskgo.data.repository
 import android.util.Log
 import com.example.chelyabinskgo.data.database.dao.FavoritesDao
 import com.example.chelyabinskgo.data.database.entity.FavoriteEventEntity
+import com.example.chelyabinskgo.data.mapper.CategoryMapper
 import com.example.chelyabinskgo.data.remote.ApiService
 import com.example.chelyabinskgo.domain.model.EventMock
 import com.example.chelyabinskgo.domain.model.mockEvents
@@ -31,7 +32,7 @@ class EventsRepositoryImpl(
                         date = dto.date,
                         price = dto.price,
                         location = dto.location,
-                        category = dto.type,
+                        category = CategoryMapper.mapEventCategory(dto.type),
                         imageUrl = normalizeImageUrl(dto.imageUrl),
                         isFavorite = favoriteIds.contains(dto.id)
                     )

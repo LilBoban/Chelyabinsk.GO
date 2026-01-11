@@ -3,6 +3,7 @@ package com.example.chelyabinskgo.data.repository
 import android.util.Log
 import com.example.chelyabinskgo.data.database.dao.FavoritesDao
 import com.example.chelyabinskgo.data.database.entity.FavoritePlaceEntity
+import com.example.chelyabinskgo.data.mapper.CategoryMapper
 import com.example.chelyabinskgo.data.remote.ApiService
 import com.example.chelyabinskgo.domain.model.PlaceMock
 import com.example.chelyabinskgo.domain.model.mockPlaces
@@ -29,7 +30,7 @@ class PlacesRepositoryImpl(
                         title = dto.title,
                         description = dto.description,
                         address = dto.address,
-                        category = dto.type,
+                        category = CategoryMapper.mapPlaceCategory(dto.type),
                         imageUrl = normalizeImageUrl(dto.imageUrl),
                         isFavorite = favoriteIds.contains(dto.id)
                     )
