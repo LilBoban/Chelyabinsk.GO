@@ -34,9 +34,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.chelyabinskgo.R
+import com.example.chelyabinskgo.presentation.screens.favorites.FavoriteEventsScreen
 import com.example.chelyabinskgo.ui.theme.ChelyabinskGreen
 
 object FavoritesTab : Tab {
@@ -57,6 +60,9 @@ object FavoritesTab : Tab {
 
 @Composable
 fun FavoritesScreenContent() {
+
+    val navigator = LocalNavigator.currentOrThrow.parent
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -106,7 +112,7 @@ fun FavoritesScreenContent() {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            FavoriteMenuItem(text = "Мои события", onClick = { /* Навигация на список событий */ })
+            FavoriteMenuItem(text = "Мои события", onClick = { navigator?.push(FavoriteEventsScreen()) })
 
             HorizontalDivider(color = Color.Gray.copy(alpha = 0.5f), thickness = 1.dp)
 

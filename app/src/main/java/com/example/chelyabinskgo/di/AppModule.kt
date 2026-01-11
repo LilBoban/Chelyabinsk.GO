@@ -9,11 +9,13 @@ import com.example.chelyabinskgo.data.repository.EventsRepositoryImpl
 import com.example.chelyabinskgo.data.repository.PlacesRepository
 import com.example.chelyabinskgo.data.repository.PlacesRepositoryImpl
 import com.example.chelyabinskgo.domain.usecase.GetEventsUseCase
+import com.example.chelyabinskgo.domain.usecase.GetFavoriteEventsUseCase
 import com.example.chelyabinskgo.domain.usecase.GetPlacesUseCase
 import com.example.chelyabinskgo.domain.usecase.ToggleEventFavoriteUseCase
 import com.example.chelyabinskgo.domain.usecase.TogglePlaceFavoriteUseCase
 import com.example.chelyabinskgo.presentation.viewmodel.EventDetailsViewModel
 import com.example.chelyabinskgo.presentation.viewmodel.EventsViewModel
+import com.example.chelyabinskgo.presentation.viewmodel.FavoriteEventsViewModel
 import com.example.chelyabinskgo.presentation.viewmodel.PlaceDetailsViewModel
 import com.example.chelyabinskgo.presentation.viewmodel.PlacesViewModel
 import org.koin.dsl.module
@@ -61,9 +63,11 @@ val appModule = module {
     single { GetPlacesUseCase(get()) }
     single { ToggleEventFavoriteUseCase(get()) }
     single { TogglePlaceFavoriteUseCase(get()) }
+    single { GetFavoriteEventsUseCase(get()) }
 
     viewModel { EventsViewModel(get(), get()) }
     viewModel { PlacesViewModel(get(), get()) }
     viewModel { EventDetailsViewModel(get(),get()) }
     viewModel { PlaceDetailsViewModel(get(),get()) }
+    viewModel { FavoriteEventsViewModel(get(), get()) }
 }
