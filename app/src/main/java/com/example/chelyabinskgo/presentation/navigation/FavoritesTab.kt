@@ -40,6 +40,7 @@ import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.chelyabinskgo.R
 import com.example.chelyabinskgo.presentation.screens.favorites.FavoriteEventsScreen
+import com.example.chelyabinskgo.presentation.screens.favorites.FavoritePlacesScreen
 import com.example.chelyabinskgo.ui.theme.ChelyabinskGreen
 
 object FavoritesTab : Tab {
@@ -116,7 +117,7 @@ fun FavoritesScreenContent() {
 
             HorizontalDivider(color = Color.Gray.copy(alpha = 0.5f), thickness = 1.dp)
 
-            FavoriteMenuItem(text = "Мои места", onClick = { /* Навигация на список мест */ })
+            FavoriteMenuItem(text = "Мои места", onClick = { navigator?.push(FavoritePlacesScreen()) })
 
             HorizontalDivider(color = Color.Gray.copy(alpha = 0.5f), thickness = 1.dp)
         }
