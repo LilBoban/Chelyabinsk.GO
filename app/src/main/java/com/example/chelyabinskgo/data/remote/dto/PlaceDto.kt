@@ -15,6 +15,8 @@ data class PlaceDto(
     val longitude: Double,
     @SerializedName("latitude")
     val latitude: Double,
+    @SerializedName("image_url")
+    val imageUrl: String? = null,
     @SerializedName("created_at")
     val createdAt: String,
     @SerializedName("updated_ad")

@@ -63,6 +63,7 @@ import com.example.chelyabinskgo.presentation.screens.events.EventDetailsScreen
 import com.example.chelyabinskgo.presentation.viewmodel.EventsViewModel
 import com.example.chelyabinskgo.ui.theme.ChelyabinskCream
 import com.example.chelyabinskgo.ui.theme.ChelyabinskGreen
+import coil.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
 
 object EventsTab : Tab {
@@ -299,19 +300,26 @@ fun EventCard(
             modifier = Modifier
                 .size(width = 100.dp, height = 70.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.DarkGray)
-            ) {
-                // Image(painter = )
-
-                Text(
-                    "абоба",
-                    color = Color.White,
-                    fontSize = 10.sp,
-                    modifier = Modifier.align(Alignment.Center)
+            if (event.imageUrl.isNotBlank()) {
+                AsyncImage(
+                    model = event.imageUrl,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
                 )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.DarkGray)
+                ) {
+                    Text(
+                        "???+???+??",
+                        color = Color.White,
+                        fontSize = 10.sp,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
             }
         }
 

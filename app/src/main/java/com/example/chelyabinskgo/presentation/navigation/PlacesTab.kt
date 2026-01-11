@@ -39,6 +39,7 @@ import com.example.chelyabinskgo.presentation.viewmodel.PlacesViewModel
 import com.example.chelyabinskgo.ui.theme.ChelyabinskCardGreen
 import com.example.chelyabinskgo.ui.theme.ChelyabinskCream
 import com.example.chelyabinskgo.ui.theme.ChelyabinskGreen
+import coil.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
 
 object PlacesTab : Tab {
@@ -222,7 +223,14 @@ fun PlaceCard(place: PlaceMock) {
                     .height(160.dp)
                     .background(Color.Gray)
             ) {
-                // Image( ... )
+                if (place.imageUrl.isNotBlank()) {
+                    AsyncImage(
+                        model = place.imageUrl,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
             }
 
             Column(

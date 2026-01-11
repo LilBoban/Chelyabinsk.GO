@@ -11,6 +11,11 @@ class EventsRepositoryImpl(
     private val apiService: ApiService,
     private val favoritesDao: FavoritesDao
 ) : EventsRepository {
+    private fun normalizeImageUrl(url: String?): String {
+        if (url.isNullOrBlank()) return ""
+        return url.replace("http://localhost:8000", "http://10.0.2.2:8000")
+    }
+
     override suspend fun getEvents(): List<EventMock> {
         val favoriteIds = favoritesDao.getFavoriteEventIds()
 
@@ -24,10 +29,10 @@ class EventsRepositoryImpl(
                         title = dto.title,
                         description = dto.description,
                         date = dto.date,
-                        price = "от 0 руб.",
+                        price = dto.price,
                         location = "Челябинск",
                         category = dto.type,
-                        imageUrl = "",
+                        imageUrl = normalizeImageUrl(dto.imageUrl),
                         isFavorite = favoriteIds.contains(dto.id)
                     )
                 }

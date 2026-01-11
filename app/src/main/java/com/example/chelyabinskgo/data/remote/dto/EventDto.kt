@@ -9,6 +9,8 @@ data class EventDto(
     val type: String,
     @SerializedName("title")
     val title: String,
+    @SerializedName("price")
+    val price: String,
     @SerializedName("description")
     val description: String,
     @SerializedName("longitude")
@@ -17,6 +19,8 @@ data class EventDto(
     val latitude: Double,
     @SerializedName("date")
     val date: String,
+    @SerializedName("image_url")
+    val imageUrl: String? = null,
     @SerializedName("created_at")
     val createdAt: String,
     @SerializedName("updated_ad")
