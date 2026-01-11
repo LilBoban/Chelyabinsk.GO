@@ -28,7 +28,7 @@ class PlacesRepositoryImpl(
                         id = dto.id,
                         title = dto.title,
                         description = dto.description,
-                        address = "Челябинск",
+                        address = dto.address,
                         category = dto.type,
                         imageUrl = normalizeImageUrl(dto.imageUrl),
                         isFavorite = favoriteIds.contains(dto.id)

@@ -13,6 +13,8 @@ data class EventDto(
     val price: String,
     @SerializedName("description")
     val description: String,
+    @SerializedName("location")
+    val location: String,
     @SerializedName("longitude")
     val longitude: Double,
     @SerializedName("latitude")

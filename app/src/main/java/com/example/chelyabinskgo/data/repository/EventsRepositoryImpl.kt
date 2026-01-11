@@ -30,7 +30,7 @@ class EventsRepositoryImpl(
                         description = dto.description,
                         date = dto.date,
                         price = dto.price,
-                        location = "Челябинск",
+                        location = dto.location,
                         category = dto.type,
                         imageUrl = normalizeImageUrl(dto.imageUrl),
                         isFavorite = favoriteIds.contains(dto.id)

@@ -19,6 +19,9 @@ data class PlaceDto(
     val imageUrl: String? = null,
     @SerializedName("created_at")
     val createdAt: String,
+    @SerializedName("address")
+    val address: String,
     @SerializedName("updated_ad")
     val updatedAd: String
+
 )
