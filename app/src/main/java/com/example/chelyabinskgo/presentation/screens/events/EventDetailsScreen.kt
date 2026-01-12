@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import coil.compose.AsyncImage
 import com.example.chelyabinskgo.R
 import com.example.chelyabinskgo.domain.model.EventMock
 import com.example.chelyabinskgo.presentation.navigation.EventsScreenContent
@@ -75,8 +76,9 @@ data class EventDetailsScreen(val event: EventMock) : Screen {
                 .fillMaxSize()
                 .background(Color.White)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.splash_background_pattern), // пока нету картинки
+            if (event.imageUrl.isNotBlank()) {
+            AsyncImage(
+                model = event.imageUrl,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -84,6 +86,17 @@ data class EventDetailsScreen(val event: EventMock) : Screen {
                     .height(300.dp)
                     .background(Color.DarkGray)
             )
+        } else {
+            Image(
+                painter = painterResource(id = R.drawable.splash_background_pattern),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp)
+                    .background(Color.DarkGray)
+            )
+        }
 
             Column(
                 modifier = Modifier

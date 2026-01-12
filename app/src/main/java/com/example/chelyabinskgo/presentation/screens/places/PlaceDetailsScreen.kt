@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import coil.compose.AsyncImage
 import com.example.chelyabinskgo.R
 import com.example.chelyabinskgo.domain.model.PlaceMock
 import com.example.chelyabinskgo.presentation.viewmodel.PlaceDetailsViewModel
@@ -61,6 +62,17 @@ data class PlaceDetailsScreen(val place: PlaceMock) : Screen {
                 .fillMaxSize()
                 .background(Color.White)
         ) {
+            if (place.imageUrl.isNotBlank()) {
+            AsyncImage(
+                model = place.imageUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp)
+                    .background(Color.Gray)
+            )
+        } else {
             Image(
                 painter = painterResource(id = R.drawable.splash_background_pattern),
                 contentDescription = null,
@@ -70,6 +82,7 @@ data class PlaceDetailsScreen(val place: PlaceMock) : Screen {
                     .height(300.dp)
                     .background(Color.Gray)
             )
+        }
 
             Column(
                 modifier = Modifier
