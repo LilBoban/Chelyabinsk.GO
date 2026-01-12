@@ -64,6 +64,9 @@ import com.example.chelyabinskgo.presentation.viewmodel.EventsViewModel
 import com.example.chelyabinskgo.ui.theme.ChelyabinskCream
 import com.example.chelyabinskgo.ui.theme.ChelyabinskGreen
 import coil.compose.AsyncImage
+import com.example.chelyabinskgo.domain.model.mockEvents
+import com.example.chelyabinskgo.presentation.viewmodel.EventsUiState
+import com.example.chelyabinskgo.ui.theme.ChelyabinskCardGreen
 import org.koin.androidx.compose.koinViewModel
 
 object EventsTab : Tab {
@@ -78,63 +81,61 @@ object EventsTab : Tab {
 
     @Composable
     override fun Content() {
-        EventsScreenContent()
+        val navigator = LocalNavigator.currentOrThrow.parent
+        val viewModel: EventsViewModel = koinViewModel()
+        val uiState by viewModel.uiState.collectAsState()
+
+        EventsScreenContent(
+            uiState = uiState,
+            onCategoryClick = { category -> viewModel.selectCategory(category) },
+            onEventClick = { event -> navigator?.push(EventDetailsScreen(event)) },
+            onFavoriteClick = { event -> viewModel.onFavoriteClick(event) },
+            onReload = { viewModel.loadEvents() }
+        )
     }
 }
 
 @Composable
-fun EventsScreenContent() {
-    val viewModel: EventsViewModel = koinViewModel()
-    val uiState by viewModel.uiState.collectAsState()
-    val filteredEvents = uiState.filteredEvents
-    val navigator = LocalNavigator.currentOrThrow
-
+fun EventsScreenContent(
+    uiState: EventsUiState,
+    onCategoryClick: (String) -> Unit,
+    onEventClick: (EventMock) -> Unit,
+    onFavoriteClick: (EventMock) -> Unit,
+    onReload: () -> Unit
+) {
     Column(
         modifier = Modifier.fillMaxSize().background(Color.White)
     ) {
         if (uiState.errorMessage != null) {
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
+                modifier = Modifier.fillMaxWidth().padding(16.dp).clickable { onReload() },
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = uiState.errorMessage.orEmpty(), color = Color.Red)
+                Text(text = "${uiState.errorMessage}. Нажми, чтобы обновить.", color = Color.Red)
             }
         }
 
         HeaderWithPatternAndFilters(
             categories = uiState.categories,
             selectedCategory = uiState.selectedCategory,
-            onCategorySelected = { newCategory ->
-                viewModel.selectCategory(newCategory)
-            }
+            onCategorySelected = onCategoryClick
         )
 
         Spacer(modifier = Modifier.height(5.dp))
 
         if (uiState.isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(32.dp),
-                contentAlignment = Alignment.Center
-            ) {
+            Box(modifier = Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
                 Text("Loading...", color = Color.Gray)
             }
         } else {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White)
+                modifier = Modifier.fillMaxSize().background(Color.White)
             ) {
-                items(filteredEvents) { event ->
-
-                    Box(modifier = Modifier.clickable {
-                        navigator.parent?.push(EventDetailsScreen(event))
-                    }) {
-                        EventCard(event = event,
-                            onFavoriteClick = { viewModel.onFavoriteClick(event) }
+                items(uiState.filteredEvents) { event ->
+                    Box(modifier = Modifier.clickable { onEventClick(event) }) {
+                        EventCard(
+                            event = event,
+                            onFavoriteClick = { onFavoriteClick(event) }
                         )
                     }
                     HorizontalDivider(
@@ -144,10 +145,10 @@ fun EventsScreenContent() {
                     )
                 }
 
-                if (filteredEvents.isEmpty()) {
+                if (uiState.filteredEvents.isEmpty() && !uiState.isLoading) {
                     item {
                         Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
-                            Text("No events found", color = Color.Gray)
+                            Text("Событий не найдено", color = Color.Gray)
                         }
                     }
                 }
@@ -171,12 +172,11 @@ fun HeaderWithPatternAndFilters(
             painter = painterResource(id = R.drawable.splash_background_pattern),
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            alpha = 0.2f, // надо запомнить что альфа это бледятина
+            alpha = 0.15f,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
+                .height(220.dp)
                 .clipToBounds()
-                .scale(1.3f)
         )
 
         Column(modifier = Modifier.padding(top = 16.dp)) {
@@ -239,19 +239,7 @@ fun HeaderWithPatternAndFilters(
 
 
             }
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(horizontal = 16.dp)
-            ) {
-                Icon(
-                    painter = painterResource(id = android.R.drawable.ic_menu_sort_by_size),
-                    contentDescription = "Фильтр",
-                    tint = Color.Black
-                )
-                Text("Фильтр", fontSize = 12.sp, color = Color.Black)
-            }
+
 
             Spacer(modifier = Modifier.height(32.dp))
 
@@ -262,7 +250,7 @@ fun HeaderWithPatternAndFilters(
             ) {
                 items(categories) { category ->
                     val isSelected = category == selectedCategory
-                    val backgroundColor = if (isSelected) Color(0xFFA5D6A7) else ChelyabinskCream
+                    val backgroundColor = if (isSelected) ChelyabinskCardGreen else ChelyabinskCream
 
                     Box(
                         modifier = Modifier
@@ -382,8 +370,17 @@ fun EventDetailItem(icon: androidx.compose.ui.graphics.vector.ImageVector, text:
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
-fun EventScreenPreview() {
-    EventsScreenContent()
+fun EventsScreenPreview() {
+    EventsScreenContent(
+        uiState = EventsUiState(
+            events = mockEvents,
+            categories = listOf("Тест", "Тест 2")
+        ),
+        onCategoryClick = {},
+        onEventClick = {},
+        onFavoriteClick = {},
+        onReload = {}
+    )
 }

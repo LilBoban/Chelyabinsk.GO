@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,7 +39,7 @@ class SplashScreen : Screen {
 
         // типа загрузка - задержка фейк
         LaunchedEffect(key1 = Unit) {
-            delay(2000)
+            delay(1500)
             navigator.replaceAll(MainTabsScreen())
         }
         SplashScreenContent()
@@ -60,7 +61,8 @@ fun SplashScreenContent() {
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(0.38f)
-                .scale(1.0f)
+                .scale(1.1f)
+                .absoluteOffset(y = 10.dp)
         )
 
         Box(

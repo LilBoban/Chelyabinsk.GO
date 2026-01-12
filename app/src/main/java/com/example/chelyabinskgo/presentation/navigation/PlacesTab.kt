@@ -40,6 +40,7 @@ import com.example.chelyabinskgo.ui.theme.ChelyabinskCardGreen
 import com.example.chelyabinskgo.ui.theme.ChelyabinskCream
 import com.example.chelyabinskgo.ui.theme.ChelyabinskGreen
 import coil.compose.AsyncImage
+import com.example.chelyabinskgo.presentation.viewmodel.PlacesUiState
 import org.koin.androidx.compose.koinViewModel
 
 object PlacesTab : Tab {
@@ -54,71 +55,64 @@ object PlacesTab : Tab {
 
     @Composable
     override fun Content() {
-        PlacesScreenContent()
+        val navigator = LocalNavigator.currentOrThrow.parent
+        val viewModel: PlacesViewModel = koinViewModel()
+        val uiState by viewModel.uiState.collectAsState()
+
+        PlacesScreenContent(
+            uiState = uiState,
+            onCategoryClick = { viewModel.selectCategory(it) },
+            onPlaceClick = { place -> navigator?.push(PlaceDetailsScreen(place)) },
+            onReload = { viewModel.loadPlaces() }
+        )
     }
 }
 
 @Composable
-fun PlacesScreenContent() {
-    val viewModel: PlacesViewModel = koinViewModel()
-    val uiState by viewModel.uiState.collectAsState()
-    val filteredPlaces = uiState.filteredPlaces
-    val navigator = LocalNavigator.currentOrThrow
-
+fun PlacesScreenContent(
+    uiState: PlacesUiState,
+    onCategoryClick: (String) -> Unit,
+    onPlaceClick: (PlaceMock) -> Unit,
+    onReload: () -> Unit
+) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
+        modifier = Modifier.fillMaxSize().background(Color.White)
     ) {
         item {
             if (uiState.errorMessage != null) {
                 Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
+                    modifier = Modifier.fillMaxWidth().padding(16.dp).clickable { onReload() },
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = uiState.errorMessage.orEmpty(), color = Color.Red)
+                    Text(text = uiState.errorMessage, color = Color.Red)
                 }
             }
 
             PlacesHeader(
                 categories = uiState.categories,
                 selectedCategory = uiState.selectedCategory,
-                onCategorySelected = { viewModel.selectCategory(it) }
+                onCategorySelected = onCategoryClick
             )
         }
 
         if (uiState.isLoading) {
             item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(32.dp),
-                    contentAlignment = Alignment.Center
-                ) {
+                Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
                     Text("Loading...", color = Color.Gray)
                 }
             }
         } else {
-            items(filteredPlaces) { place ->
-                Box(modifier = Modifier.clickable {
-                    navigator.parent?.push(PlaceDetailsScreen(place))
-                }) {
+            items(uiState.filteredPlaces) { place ->
+                Box(modifier = Modifier.clickable { onPlaceClick(place) }) {
                     PlaceCard(place)
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            if (filteredPlaces.isEmpty()) {
+            if (uiState.filteredPlaces.isEmpty()) {
                 item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(32.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("No places found", color = Color.Gray)
+                    Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+                        Text("Мест не найдено", color = Color.Gray)
                     }
                 }
             }
@@ -261,6 +255,11 @@ fun PlaceCard(place: PlaceMock) {
 
 @Preview(showBackground = true)
 @Composable
-fun PlacesScreenPrewiew(){
-    PlacesScreenContent()
+fun PlacesScreenPreview() {
+    PlacesScreenContent(
+        uiState = PlacesUiState(categories = listOf("Еда", "Прогулки")),
+        onCategoryClick = {},
+        onPlaceClick = {},
+        onReload = {}
+    )
 }

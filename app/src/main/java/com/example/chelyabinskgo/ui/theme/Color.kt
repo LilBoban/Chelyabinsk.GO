@@ -13,3 +13,5 @@ val ChelyabinskGreen = Color(0xFF18682F)
 val ChelyabinskText = Color(0xFFFFF2CE)
 val ChelyabinskCream = Color(0xFFFFFDE7)
 val ChelyabinskCardGreen = Color(0xFFC2DFCA)
+val ChelyabinskGray = Color(0xBE444444)
+

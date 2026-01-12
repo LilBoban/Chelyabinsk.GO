@@ -55,15 +55,20 @@ object FavoritesTab : Tab {
 
     @Composable
     override fun Content() {
-        FavoritesScreenContent()
+        val navigator = LocalNavigator.currentOrThrow.parent
+
+        FavoritesScreenContent(
+            onEventsClick = { navigator?.push(FavoriteEventsScreen()) },
+            onPlacesClick = { navigator?.push(FavoritePlacesScreen()) }
+        )
     }
 }
 
 @Composable
-fun FavoritesScreenContent() {
-
-    val navigator = LocalNavigator.currentOrThrow.parent
-
+fun FavoritesScreenContent(
+    onEventsClick: () -> Unit,
+    onPlacesClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -113,11 +118,11 @@ fun FavoritesScreenContent() {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            FavoriteMenuItem(text = "Мои события", onClick = { navigator?.push(FavoriteEventsScreen()) })
+            FavoriteMenuItem(text = "Мои события", onClick = onEventsClick)
 
             HorizontalDivider(color = Color.Gray.copy(alpha = 0.5f), thickness = 1.dp)
 
-            FavoriteMenuItem(text = "Мои места", onClick = { navigator?.push(FavoritePlacesScreen()) })
+            FavoriteMenuItem(text = "Мои места", onClick = onPlacesClick)
 
             HorizontalDivider(color = Color.Gray.copy(alpha = 0.5f), thickness = 1.dp)
         }
@@ -152,5 +157,8 @@ fun FavoriteMenuItem(text: String, onClick: () -> Unit) {
 @Preview(showBackground = true,)
 @Composable
 fun FavoriteMenuPreview(){
-    FavoritesScreenContent()
+    FavoritesScreenContent(
+        onEventsClick = {},
+        onPlacesClick = {}
+    )
 }

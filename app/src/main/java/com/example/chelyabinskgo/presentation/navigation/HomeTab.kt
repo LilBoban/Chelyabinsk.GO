@@ -155,17 +155,16 @@ fun CategoriesGrid() {
         ) {
             CategoryItem(icon = Icons.Outlined.Info, title = "Где\nпоесть") // Заменить иконку на пиццу
             CategoryItem(icon = Icons.Outlined.Face, title = "Чем\nзаняться") // Заменить на лампочку
-            CategoryItem(icon = Icons.Outlined.Home, title = "Где\nжить") // Тоже
         }
 
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp),
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
             CategoryItem(icon = Icons.Outlined.Place, title = "Куда\nпойти") // Заменить на человечка
-            CategoryItem(icon = Icons.Outlined.Call, title = "Сервисы") // Заменить на телефон
+            CategoryItem(icon = Icons.Outlined.Home, title = "Где\nжить") // Тоже
+            //CategoryItem(icon = Icons.Outlined.Call, title = "Сервисы") // Заменить на телефон
         }
     }
 }
