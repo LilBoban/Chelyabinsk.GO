@@ -36,12 +36,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelStoreOwner
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
@@ -67,8 +69,10 @@ object HomeTab : Tab {
     override fun Content() {
         val tabNavigator = LocalTabNavigator.current
 
-        val placesViewModel: PlacesViewModel = koinViewModel()
-        val eventsViewModel: EventsViewModel = koinViewModel()
+        val context = LocalContext.current
+
+        val placesViewModel: PlacesViewModel = koinViewModel(viewModelStoreOwner = context as ViewModelStoreOwner)
+        val eventsViewModel: EventsViewModel = koinViewModel(viewModelStoreOwner = context as ViewModelStoreOwner)
 
         HomeScreenContent(
             onCategoryClick = { targetTab, categoryName ->

@@ -48,11 +48,13 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelStoreOwner
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
@@ -82,7 +84,10 @@ object EventsTab : Tab {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow.parent
-        val viewModel: EventsViewModel = koinViewModel()
+
+        val context = LocalContext.current
+        val viewModel: EventsViewModel = koinViewModel(viewModelStoreOwner = context as ViewModelStoreOwner)
+
         val uiState by viewModel.uiState.collectAsState()
 
         EventsScreenContent(
