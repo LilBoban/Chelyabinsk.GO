@@ -133,7 +133,7 @@ fun PlacesHeader(
             painter = painterResource(id = R.drawable.splash_background_pattern),
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            alpha = 0.15f,
+            alpha = 0.2f,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(220.dp)
@@ -149,11 +149,11 @@ fun PlacesHeader(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("Места", fontSize = 32.sp, color = Color.Black)
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Outlined.Info, null, tint = ChelyabinskGreen, modifier = Modifier.size(24.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("Сервисы", fontSize = 14.sp, color = Color.Black)
-                }
+//                Row(verticalAlignment = Alignment.CenterVertically) {
+//                    Icon(Icons.Outlined.Info, null, tint = ChelyabinskGreen, modifier = Modifier.size(24.dp))
+//                    Spacer(modifier = Modifier.width(4.dp))
+//                    Text("Сервисы", fontSize = 14.sp, color = Color.Black)
+//                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))

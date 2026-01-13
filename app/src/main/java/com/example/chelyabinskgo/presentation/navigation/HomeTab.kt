@@ -2,6 +2,7 @@ package com.example.chelyabinskgo.presentation.navigation
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,11 +42,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.chelyabinskgo.R
+import com.example.chelyabinskgo.presentation.viewmodel.EventsViewModel
+import com.example.chelyabinskgo.presentation.viewmodel.PlacesViewModel
 import com.example.chelyabinskgo.ui.theme.ChelyabinskCream
 import com.example.chelyabinskgo.ui.theme.ChelyabinskGreen
+import org.koin.androidx.compose.koinViewModel
 
 object HomeTab : Tab {
 
@@ -60,19 +65,36 @@ object HomeTab : Tab {
 
     @Composable
     override fun Content() {
-        HomeScreenContent()
+        val tabNavigator = LocalTabNavigator.current
+
+        val placesViewModel: PlacesViewModel = koinViewModel()
+        val eventsViewModel: EventsViewModel = koinViewModel()
+
+        HomeScreenContent(
+            onCategoryClick = { targetTab, categoryName ->
+                when (targetTab) {
+                    is PlacesTab -> {
+                        placesViewModel.selectCategory(categoryName)
+                        tabNavigator.current = PlacesTab
+                    }
+                    is EventsTab -> {
+                        eventsViewModel.selectCategory(categoryName)
+                        tabNavigator.current = EventsTab
+                    }
+                }
+            }
+        )
     }
 }
 
 @Composable
-fun HomeScreenContent() {
-    val scrollState = rememberScrollState()
-
+fun HomeScreenContent(
+    onCategoryClick: (Tab, String) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(ChelyabinskCream)
-            .verticalScroll(scrollState)
     ) {
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -96,7 +118,7 @@ fun HomeScreenContent() {
         Spacer(modifier = Modifier.height(32.dp))
 
         // Категории (Иконки)
-        CategoriesGrid()
+        CategoriesGrid(onCategoryClick)
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -144,7 +166,9 @@ fun SearchBar() {
 }
 
 @Composable
-fun CategoriesGrid() {
+fun CategoriesGrid(
+    onCategoryClick: (Tab, String) -> Unit
+) {
     Column(
         modifier = Modifier.padding(horizontal = 24.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
@@ -153,8 +177,8 @@ fun CategoriesGrid() {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
-            CategoryItem(icon = Icons.Outlined.Info, title = "Где\nпоесть") // Заменить иконку на пиццу
-            CategoryItem(icon = Icons.Outlined.Face, title = "Чем\nзаняться") // Заменить на лампочку
+            CategoryItem(icon = Icons.Outlined.Info, title = "Где\nпоесть", onClick = { onCategoryClick(PlacesTab, "Где поесть") }) // Заменить иконку на пиццу
+            CategoryItem(icon = Icons.Outlined.Face, title = "Чем\nзаняться", onClick = { onCategoryClick(EventsTab, "Выставки") }) // Заменить на лампочку
         }
 
         Row(
@@ -162,16 +186,21 @@ fun CategoriesGrid() {
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
-            CategoryItem(icon = Icons.Outlined.Place, title = "Куда\nпойти") // Заменить на человечка
-            CategoryItem(icon = Icons.Outlined.Home, title = "Где\nжить") // Тоже
+            CategoryItem(icon = Icons.Outlined.Place, title = "Куда\nпойти", onClick = { onCategoryClick(PlacesTab, "Куда пойти") }) // Заменить на человечка
+            CategoryItem(icon = Icons.Outlined.Home, title = "Где\nжить", onClick = {onCategoryClick(PlacesTab, "Где разместиться")} )// Тоже
             //CategoryItem(icon = Icons.Outlined.Call, title = "Сервисы") // Заменить на телефон
         }
     }
 }
 
 @Composable
-fun CategoryItem(icon: ImageVector, title: String) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+fun CategoryItem(icon: ImageVector, title: String, onClick: () -> Unit) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .clickable { onClick() }
+            .padding(8.dp)
+        ) {
         Icon(
             imageVector = icon,
             contentDescription = null,
@@ -206,5 +235,5 @@ fun PromoBanner() {
 @Preview(showBackground = true)
 @Composable
 fun HomeTabPreview() {
-    HomeScreenContent()
+    HomeScreenContent(onCategoryClick = {tab, string ->})
 }

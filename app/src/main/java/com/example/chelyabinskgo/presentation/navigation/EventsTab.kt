@@ -172,7 +172,7 @@ fun HeaderWithPatternAndFilters(
             painter = painterResource(id = R.drawable.splash_background_pattern),
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            alpha = 0.15f,
+            alpha = 0.2f,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(220.dp)
@@ -194,18 +194,18 @@ fun HeaderWithPatternAndFilters(
                     fontWeight = FontWeight.Normal
                 )
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.clickable { }) {
-                    Icon(
-                        imageVector = Icons.Outlined.Info,
-                        contentDescription = null,
-                        tint = ChelyabinskGreen,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("Сервисы", color = Color.Black, fontSize = 14.sp)
-                }
+//                Row(
+//                    verticalAlignment = Alignment.CenterVertically,
+//                    modifier = Modifier.clickable { }) {
+//                    Icon(
+//                        imageVector = Icons.Outlined.Info,
+//                        contentDescription = null,
+//                        tint = ChelyabinskGreen,
+//                        modifier = Modifier.size(24.dp)
+//                    )
+//                    Spacer(modifier = Modifier.width(4.dp))
+//                    Text("Сервисы", color = Color.Black, fontSize = 14.sp)
+//                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))

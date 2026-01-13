@@ -82,7 +82,7 @@ fun FavoritesScreenContent(
                 painter = painterResource(id = R.drawable.splash_background_pattern),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                alpha = 0.15f,
+                alpha = 0.2f,
                 alignment = Alignment.BottomCenter,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -93,7 +93,7 @@ fun FavoritesScreenContent(
                 painter = painterResource(id = R.drawable.splash_background_pattern),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                alpha = 0.15f,
+                alpha = 0.2f,
                 alignment = Alignment.TopCenter,
                 modifier = Modifier
                     .fillMaxWidth()
