@@ -62,6 +62,7 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.chelyabinskgo.R
 import com.example.chelyabinskgo.domain.model.EventMock
 import com.example.chelyabinskgo.presentation.screens.events.EventDetailsScreen
+import com.example.chelyabinskgo.presentation.util.formatIsoDateTimeRu
 import com.example.chelyabinskgo.presentation.viewmodel.EventsViewModel
 import com.example.chelyabinskgo.ui.theme.ChelyabinskCream
 import com.example.chelyabinskgo.ui.theme.ChelyabinskGreen
@@ -344,7 +345,7 @@ fun EventCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            EventDetailItem(icon = Icons.Outlined.DateRange, text = event.date)
+            EventDetailItem(icon = Icons.Outlined.DateRange, text = formatIsoDateTimeRu(event.date))
             EventDetailItem(icon = Icons.Outlined.ShoppingCart, text = event.price)
             EventDetailItem(icon = Icons.Outlined.Place, text = event.location)
         }
