@@ -181,8 +181,8 @@ fun CategoriesGrid(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
-            CategoryItem(icon = Icons.Outlined.Info, title = "Где\nпоесть", onClick = { onCategoryClick(PlacesTab, "Где поесть") }) // Заменить иконку на пиццу
-            CategoryItem(icon = Icons.Outlined.Face, title = "Чем\nзаняться", onClick = { onCategoryClick(EventsTab, "Выставки") }) // Заменить на лампочку
+            CategoryItem(iconResId = R.drawable.ic_food, title = "Где\nпоесть", onClick = { onCategoryClick(PlacesTab, "Где поесть") }) // Заменить иконку на пиццу
+            CategoryItem(iconResId = R.drawable.ic_idea, title = "Чем\nзаняться", onClick = { onCategoryClick(EventsTab, "Выставки") }) // Заменить на лампочку
         }
 
         Row(
@@ -190,26 +190,25 @@ fun CategoriesGrid(
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
-            CategoryItem(icon = Icons.Outlined.Place, title = "Куда\nпойти", onClick = { onCategoryClick(PlacesTab, "Куда пойти") }) // Заменить на человечка
-            CategoryItem(icon = Icons.Outlined.Home, title = "Где\nжить", onClick = {onCategoryClick(PlacesTab, "Где разместиться")} )// Тоже
+            CategoryItem(iconResId = R.drawable.ic_men, title = "Куда\nпойти", onClick = { onCategoryClick(PlacesTab, "Куда пойти") }) // Заменить на человечка
+            CategoryItem(iconResId = R.drawable.ic_home, title = "Где\nжить", onClick = {onCategoryClick(PlacesTab, "Где разместиться")} )// Тоже
             //CategoryItem(icon = Icons.Outlined.Call, title = "Сервисы") // Заменить на телефон
         }
     }
 }
 
 @Composable
-fun CategoryItem(icon: ImageVector, title: String, onClick: () -> Unit) {
+fun CategoryItem(iconResId: Int, title: String, onClick: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .clickable { onClick() }
             .padding(8.dp)
         ) {
-        Icon(
-            imageVector = icon,
+        Image(
+            painter = painterResource(id = iconResId),
             contentDescription = null,
-            modifier = Modifier.size(48.dp),
-            tint = Color.Black
+            modifier = Modifier.size(48.dp)
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
