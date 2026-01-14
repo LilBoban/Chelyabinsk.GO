@@ -16,13 +16,24 @@ data class EventsUiState(
     val errorMessage: String? = null,
     val events: List<EventMock> = emptyList(),
     val categories: List<String> = emptyList(),
-    val selectedCategory: String = ""
+    val selectedCategory: String = "",
+    val searchQuery: String = ""
 ) {
     val filteredEvents: List<EventMock>
-        get() = if (selectedCategory.isBlank()) {
-            events
-        } else {
-            events.filter { it.category == selectedCategory }
+        get() {
+            val byCategory = if (selectedCategory.isBlank()) {
+                events
+            } else {
+                events.filter { it.category == selectedCategory }
+            }
+
+            return if (searchQuery.isBlank()) {
+                byCategory
+            } else {
+                byCategory.filter {
+                    it.title.contains(searchQuery, ignoreCase = true)
+                }
+            }
         }
 }
 
@@ -59,6 +70,10 @@ class EventsViewModel(
 
     fun selectCategory(category: String) {
         _uiState.update { it.copy(selectedCategory = category) }
+    }
+
+    fun onSearchQueryChange(query: String) {
+        _uiState.update { it.copy(searchQuery = query) }
     }
 
     fun onFavoriteClick(event: EventMock) {

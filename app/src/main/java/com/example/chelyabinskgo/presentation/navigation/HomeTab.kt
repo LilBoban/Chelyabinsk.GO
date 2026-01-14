@@ -117,14 +117,14 @@ fun HomeScreenContent(
         Spacer(modifier = Modifier.height(24.dp))
 
         // Поиск
-        SearchBar()
+        //SearchBar()
 
         Spacer(modifier = Modifier.height(32.dp))
 
         // Категории (Иконки)
         CategoriesGrid(onCategoryClick)
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(60.dp))
 
         // Баннер
         PromoBanner()

@@ -16,13 +16,16 @@ data class PlacesUiState(
     val errorMessage: String? = null,
     val places: List<PlaceMock> = emptyList(),
     val categories: List<String> = emptyList(),
-    val selectedCategory: String = ""
+    val selectedCategory: String = "",
+    val searchQuery: String = ""
 ) {
     val filteredPlaces: List<PlaceMock>
-        get() = if (selectedCategory.isBlank()) {
-            places
-        } else {
-            places.filter { it.category == selectedCategory }
+        get() {
+            val byCategory = if (selectedCategory.isBlank()) places else places.filter { it.category == selectedCategory }
+
+            return if (searchQuery.isBlank()) byCategory else byCategory.filter {
+                it.title.contains(searchQuery, ignoreCase = true)
+            }
         }
 }
 
@@ -59,6 +62,10 @@ class PlacesViewModel(
 
     fun selectCategory(category: String) {
         _uiState.update { it.copy(selectedCategory = category) }
+    }
+
+    fun onSearchQueryChange(query: String) {
+        _uiState.update { it.copy(searchQuery = query) }
     }
 
     fun onFavoriteClick(place: PlaceMock) {

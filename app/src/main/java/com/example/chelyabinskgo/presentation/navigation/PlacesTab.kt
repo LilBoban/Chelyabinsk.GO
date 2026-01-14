@@ -68,7 +68,8 @@ object PlacesTab : Tab {
             uiState = uiState,
             onCategoryClick = { viewModel.selectCategory(it) },
             onPlaceClick = { place -> navigator?.push(PlaceDetailsScreen(place)) },
-            onReload = { viewModel.loadPlaces() }
+            onReload = { viewModel.loadPlaces() },
+            onSearchChange = {viewModel.onSearchQueryChange(it)}
         )
     }
 }
@@ -78,7 +79,8 @@ fun PlacesScreenContent(
     uiState: PlacesUiState,
     onCategoryClick: (String) -> Unit,
     onPlaceClick: (PlaceMock) -> Unit,
-    onReload: () -> Unit
+    onReload: () -> Unit,
+    onSearchChange: (String) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().background(Color.White)
@@ -96,7 +98,10 @@ fun PlacesScreenContent(
             PlacesHeader(
                 categories = uiState.categories,
                 selectedCategory = uiState.selectedCategory,
-                onCategorySelected = onCategoryClick
+                onCategorySelected = onCategoryClick,
+
+                searchQuery = uiState.searchQuery,
+                onSearchChange = onSearchChange
             )
         }
 
@@ -131,7 +136,9 @@ fun PlacesScreenContent(
 fun PlacesHeader(
     categories: List<String>,
     selectedCategory: String,
-    onCategorySelected: (String) -> Unit
+    onCategorySelected: (String) -> Unit,
+    searchQuery: String,
+    onSearchChange: (String) -> Unit
 ) {
     Box(modifier = Modifier.fillMaxWidth()) {
         Image(
@@ -164,20 +171,22 @@ fun PlacesHeader(
             Spacer(modifier = Modifier.height(16.dp))
 
             TextField(
-                value = "",
-                onValueChange = {},
+                value = searchQuery,
+                onValueChange = onSearchChange,
                 placeholder = { Text("Поиск") },
                 leadingIcon = { Icon(Icons.Default.Search, null, tint = ChelyabinskGreen) },
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = ChelyabinskCream,
                     unfocusedContainerColor = ChelyabinskCream,
                     focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedTextColor = Color.Black
                 ),
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = 16.dp),
+                singleLine = true
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -265,6 +274,7 @@ fun PlacesScreenPreview() {
         uiState = PlacesUiState(categories = listOf("Еда", "Прогулки")),
         onCategoryClick = {},
         onPlaceClick = {},
-        onReload = {}
+        onReload = {},
+        onSearchChange = {}
     )
 }

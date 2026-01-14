@@ -96,7 +96,8 @@ object EventsTab : Tab {
             onCategoryClick = { category -> viewModel.selectCategory(category) },
             onEventClick = { event -> navigator?.push(EventDetailsScreen(event)) },
             onFavoriteClick = { event -> viewModel.onFavoriteClick(event) },
-            onReload = { viewModel.loadEvents() }
+            onReload = { viewModel.loadEvents() },
+            onSearchChange = { viewModel.onSearchQueryChange(it) }
         )
     }
 }
@@ -107,7 +108,8 @@ fun EventsScreenContent(
     onCategoryClick: (String) -> Unit,
     onEventClick: (EventMock) -> Unit,
     onFavoriteClick: (EventMock) -> Unit,
-    onReload: () -> Unit
+    onReload: () -> Unit,
+    onSearchChange: (String) -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize().background(Color.White)
@@ -124,7 +126,10 @@ fun EventsScreenContent(
         HeaderWithPatternAndFilters(
             categories = uiState.categories,
             selectedCategory = uiState.selectedCategory,
-            onCategorySelected = onCategoryClick
+            onCategorySelected = onCategoryClick,
+
+            searchQuery = uiState.searchQuery,
+            onSearchChange = onSearchChange
         )
 
         Spacer(modifier = Modifier.height(5.dp))
@@ -169,7 +174,9 @@ fun EventsScreenContent(
 fun HeaderWithPatternAndFilters(
     categories: List<String>,
     selectedCategory: String,
-    onCategorySelected: (String) -> Unit
+    onCategorySelected: (String) -> Unit,
+    searchQuery: String,
+    onSearchChange: (String) -> Unit
 ) {
     Box(
         modifier = Modifier.fillMaxWidth()
@@ -223,8 +230,8 @@ fun HeaderWithPatternAndFilters(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 TextField(
-                    value = "",
-                    onValueChange = {},
+                    value = searchQuery,
+                    onValueChange = onSearchChange,
                     placeholder = { Text("Поиск") },
                     leadingIcon = {
                         Icon(
@@ -237,10 +244,13 @@ fun HeaderWithPatternAndFilters(
                         focusedContainerColor = ChelyabinskCream,
                         unfocusedContainerColor = ChelyabinskCream,
                         focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedTextColor = Color.Black
                     ),
                     shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    singleLine = true
+
                 )
 
 
@@ -387,6 +397,7 @@ fun EventsScreenPreview() {
         onCategoryClick = {},
         onEventClick = {},
         onFavoriteClick = {},
-        onReload = {}
+        onReload = {},
+        onSearchChange = {}
     )
 }
